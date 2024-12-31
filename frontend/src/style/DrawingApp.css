@@ -21,9 +21,11 @@ body {
 
 .app-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center; /* Center the content horizontally */
   align-items: center;
+  width: 100%;
 }
+
 
 .logo-container {
   display: flex;
@@ -32,8 +34,8 @@ body {
 }
 
 .app-logo {
-  width: 50px;
-  height: 50px;
+  width: 200px;
+  height: 100px;
 }
 
 .app-title {
@@ -44,56 +46,55 @@ body {
 .tools-container {
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin: 20px 0;
+  gap: 10px;
+  margin: 15px 0;
+  width: 100%;
+  justify-content: space-between;
 }
 
-.clear-btn {
-  padding: 10px 15px;
-  background: #ff5c5c;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
+.tool-selector {
   display: flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-  transition: background 0.3s ease;
+  align-items: center; /* Ensures label and select are in the same line */
 }
 
-.clear-btn:hover {
-  background: #e04848;
+.tool-selector label {
+  font-size: 18px;
+  color: #333;
+  font-weight: 600;
+  margin-right: 10px; /* Adds space between label and select */
+  font-family: 'Arial', sans-serif; /* Change the font family */
 }
 
-.screenshot-btn {
-  padding: 10px 15px;
-  background: #4caf50;
-  color: white;
-  border: none;
+.tool-selector select {
+  padding: 10px;
+  font-size: 16px;
   border-radius: 8px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.screenshot-btn:hover {
-  background: #43a047;
+  border: 2px solid #ccc;
+  background-color: #fff;
 }
 
 .upload-btn {
-  padding: 10px 15px;
+  padding: 12px 18px;
   background: #3f51b5;
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 12px;
+  font-size: 16px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, transform 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .upload-btn:hover {
   background: #3949ab;
+  transform: scale(1.05);
+}
+
+.upload-btn input[type="file"] {
+  display: none;
 }
 
 .drawing-area {
@@ -110,23 +111,34 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 500px; /* Increased the width */
-  padding: 30px; /* Increased padding */
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0px 6px 25px rgba(0, 0, 0, 0.2);
+  width: 500px;
+  padding: 40px;
+  background: linear-gradient(145deg, #fff, #f1f1f1);
+  border-radius: 20px;
+  box-shadow: 0px 6px 25px rgba(0, 0, 0, 0.1);
   z-index: 10;
   text-align: center;
-  animation: fadeIn 0.5s ease-out;
-  backdrop-filter: blur(10px); /* Apply background blur */
-  -webkit-backdrop-filter: blur(10px); /* For Safari compatibility */
+  backdrop-filter: blur(15px);
 }
 
 .card-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative; /* Keep the close button within the card */
+  gap: 20px;
+  position: relative;
+}
+
+.card-content h2 {
+  font-size: 20px;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.card-content p {
+  font-size: 16px;
+  color: #555;
 }
 
 .close-btn {
@@ -135,15 +147,69 @@ body {
   right: 10px;
   background: none;
   border: none;
-  font-size: 24px;
-  cursor: pointer;
+  font-size: 30px;
   color: #333;
+  cursor: pointer;
 }
 
 .close-btn:hover {
-  color: #ff5c5c;
+  color: #ff6f61;
 }
 
+.filename-input-container {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.filename-input-container label {
+  display: block;
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+  text-align: left;
+  margin-bottom: 7px;
+}
+
+.filename-input-container input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  transition: border-color 0.3s ease;
+}
+
+.filename-input-container input:focus {
+  outline: none;
+  border-color: #42a5f5;
+}
+
+.save-btn {
+  padding: 12px 18px;
+  background: #42a5f5;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.save-btn:hover {
+  background: #1e88e5;
+  transform: scale(1.05);
+}
+
+.app-container.blurred {
+  filter: blur(5px);
+  pointer-events: none;
+}
+
+/* Spinner */
 .spinner-container {
   display: flex;
   align-items: center;
@@ -154,16 +220,10 @@ body {
   width: 40px;
   height: 40px;
   border: 4px solid #ddd;
-  border-top: 4px solid #004aad;
+  border-top: 4px solid #42a5f5;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
-
-.app-container.blurred {
-  filter: blur(5px);
-  pointer-events: none; /* Prevent interactions with the blurred elements */
-}
-
 
 @keyframes spin {
   to {
@@ -177,5 +237,85 @@ body {
   }
   to {
     opacity: 1;
+  }
+}
+
+/* Button colors */
+.action-btn, .upload-btn, .clear-btn, .screenshot-btn {
+  padding: 12px 18px;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Screenshot button specific styles (green) */
+.screenshot-btn {
+  background: #4caf50; /* Green background */
+}
+
+.screenshot-btn:hover {
+  background: #90e794; /* Darker green on hover */
+}
+
+/* Clear button specific styles (red) */
+.clear-btn {
+  background: #f44336; /* Red background */
+}
+
+.clear-btn:hover {
+  background: #a11613; /* Darker red on hover */
+}
+
+/* Upload button */
+.upload-btn {
+  background: #3f51b5; /* Blue background */
+}
+
+.upload-btn:hover {
+  background: #7d8adc; /* Darker blue on hover */
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.text-container {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  font-size: 16px;
+  color: #333;
+  overflow-y: auto;
+  max-height: 200px;
+}
+
+/* Spinner */
+.spinner-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #ddd;
+  border-top: 4px solid #42a5f5;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

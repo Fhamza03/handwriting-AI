@@ -10,8 +10,11 @@ const DrawingApp = () => {
   const [resultText, setResultText] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCardVisible, setIsCardVisible] = useState(false);
+  const [isUpload, setIsUpload] = useState(false);
+  const [fileName, setFileName] = useState("drawing"); // Default filename
   const isDrawing = useRef(false);
   const drawingRef = useRef(null);
+  const [imageUrl, setImageUrl] = useState(null);
 
   const handleMouseDown = (e) => {
     isDrawing.current = true;
@@ -38,10 +41,9 @@ const DrawingApp = () => {
 
   const handleScreenshot = () => {
     html2canvas(drawingRef.current).then((canvas) => {
-      const link = document.createElement("a");
-      link.href = canvas.toDataURL();
-      link.download = "drawing.png";
-      link.click();
+      const imageUrl = canvas.toDataURL();
+      setImageUrl(imageUrl); // Set the generated image URL
+      setIsCardVisible(true); // Show the save card
     });
   };
 
@@ -49,7 +51,7 @@ const DrawingApp = () => {
     const file = e.target.files[0];
     if (file) {
       setIsProcessing(true);
-      setIsCardVisible(true);
+      setIsUpload(true);
 
       const formData = new FormData();
       formData.append("image", file);
@@ -62,10 +64,7 @@ const DrawingApp = () => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Backend Response:", data); // Log the response to check the data structure
-
-          // Set the result text using the correct property from the backend response
-          setResultText(data.text); // Updated to match the backend structure
+          setResultText(data.text);
         } else {
           setResultText("Error processing image.");
         }
@@ -82,6 +81,23 @@ const DrawingApp = () => {
     setIsCardVisible(false);
     setResultText("");
   };
+  const closeUpload = () => {
+    setIsUpload(false);
+    setResultText("");
+  };
+
+  const handleFileNameChange = (e) => {
+    setFileName(e.target.value);
+  };
+
+  const saveImage = () => {
+    if (imageUrl) {
+      const link = document.createElement("a");
+      link.href = imageUrl;
+      link.download = `${fileName}.png`; // Use the entered filename
+      link.click();
+    }
+  };
 
   return (
     <div>
@@ -89,23 +105,31 @@ const DrawingApp = () => {
         <header className="app-header">
           <div className="logo-container">
             <img src={Logo} alt="App Logo" className="app-logo" />
-            <h1 className="app-title">Drawing App</h1>
           </div>
         </header>
 
         <div className="tools-container">
-          <label htmlFor="tool-select">Tool:</label>
-          <select
-            id="tool-select"
-            value={mode}
-            onChange={(e) => setMode(e.target.value)}
-          >
-            <option value="brush">Brush</option>
-            <option value="eraser">Eraser</option>
-          </select>
-          <button onClick={clearCanvas} className="clear-btn">
-            Clear Canvas
-          </button>
+          <div className="tool-selector">
+            <label htmlFor="tool-select">Tool :</label>
+            <select
+              id="tool-select"
+              value={mode}
+              onChange={(e) => setMode(e.target.value)}
+            >
+              <option value="brush">Brush</option>
+              <option value="eraser">Eraser</option>
+            </select>
+          </div>
+
+          <label className="upload-btn">
+            Upload Image
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              style={{ display: "none" }}
+            />
+          </label>
         </div>
 
         <div className="drawing-area" ref={drawingRef}>
@@ -134,38 +158,60 @@ const DrawingApp = () => {
           </Stage>
         </div>
 
-        <button onClick={handleScreenshot} className="screenshot-btn">
-          Take Screenshot
-        </button>
-
-        <label className="upload-btn">
-          Upload Image
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileUpload}
-            style={{ display: "none" }}
-          />
-        </label>
+        <div className="button-group">
+          <button onClick={handleScreenshot} className="screenshot-btn">
+            Take Screenshot
+          </button>
+          <button onClick={clearCanvas} className="clear-btn">
+            Clear Text
+          </button>
+        </div>
       </div>
+
       {isCardVisible && (
         <div className="result-card">
           <div className="card-content">
             <button className="close-btn" onClick={closeCard}>
               ×
             </button>
-            <h2>Extracted Text</h2>
-            {isProcessing ? (
-              <div className="spinner-container">
-                <div className="spinner"></div>
-                <p>Processing...</p>
-              </div>
-            ) : (
-              <p>{resultText || "No text detected yet."}</p>
-            )}
+            <h2>Save Your Image</h2>
+            <div className="filename-input-container">
+              <label htmlFor="filename-input">Enter Filename:</label>
+              <input
+                id="filename-input"
+                type="text"
+                value={fileName}
+                onChange={handleFileNameChange}
+              />
+            </div>
+            <button className="save-btn" onClick={saveImage}>
+              Save Image
+            </button>
           </div>
         </div>
       )}
+      {isUpload && (
+  <div className="result-card">
+    <div className="card-content">
+      <button className="close-btn" onClick={closeUpload}>
+        ×
+      </button>
+      <h2>Extracted Text</h2>
+
+      {isProcessing ? (
+        <div className="spinner-container">
+          <div className="spinner"></div>
+          <p>Processing...</p>
+        </div>
+      ) : (
+        <div className="text-container">
+          <p>{resultText}</p>
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
